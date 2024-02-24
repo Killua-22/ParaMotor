@@ -1,0 +1,110 @@
+Easy Airplane Path, by Parabole
+
+This easy-to-use system will allow you to put airplanes, or any other aircrafts, in the sky of your games in seconds. Choose your aircraft model, 
+place a few nodes to create your path, and you are ready to go. The system will then make your aircrafts fly realistically in your scenes without 
+needing any other inputs. You can either make them fly endlessly or make them flyby from script. If you want to go further, several options are
+available to fine tune the system. To go even further, the well commented code will make it easy for you to modify at will.
+
+This is not:
+
+- A system allowing a player to fly an airplane.
+- A system allowing an AI to dynamically control an airplane.
+
+
+
+1 - GETTING STARTED
+
+	1. Put an empty Airplane Path system in your scene. You can add one by selecting "GameObject/Create Other/Airplane Path" in the Unity menu bar. You can add one by selecting "Airplane Path" in component menu too.
+	2. Create as many nodes as you want (minimum 2 for Once looping type, minimum 3 for Looping) by clicking on Create Node.
+	3. There will be a child of your Airplane Path GameObject named Path. This child GameObject will in turn contain your created nodes.
+	4. Set your airplane model in the plane Transform field in the path inspector.
+	5. Move those nodes to create your path. Make it smooth to produce realistic results.
+	6. When all is set, press play to visualize the flight of your airplane.
+	7. Change values in inspector for fine tuning. See documentation below.
+	8. To delete a node, click Delete Node in inspector.
+
+
+
+2 - AIRPLANE PATH SCRIPT INSPECTOR
+
+Values
+Looping Type: Once: The plane stops at the end of path, Looping: Loops endlessly
+Play At Start: Should the plane path start when the scene starts?
+Deactivate Plane On Stop: Should the GameObject be deactivated when the path ends?
+Destroy On Deactivate: Destroy the Path GameObject and children if the path ends and the plane is set to be deactivated. Set to true if you want a single use path instantiated from prefab and destroyed after its use.
+Use World Space Movement: Use if you want to move the path while the plane moves on it. The plane will orient itself according to the overall speed it move in relation to the world. 
+May lead to unrealistic speeds if the you move the path too quickly in relation to the AirplanePath Speed.
+Show Gizmos: Should the path be shown in editor?
+Gizmo Colors: Colors of the different gizmos.
+Speed: The speed at which the plane goes along the path.
+Roll Intensity: How much the plane should roll (bank) when turning.
+Plane: The aircraft model Transform
+Nodes: Array containing the nodes. Should not be manually in standard uses.
+
+Buttons
+Create Node: Use this button to create another path node. You can undo this.
+Fix Null Nodes:If you somehow manage to get errors in the console because of the airplane path script, click this button. You may have empty (null) nodes in your Nodes array and this button will fix it.
+
+
+
+3 - AIRPLANE NODE SCRIPT INSPECTOR
+
+Values
+Tangent Strength: Strength of the tangent at this node
+Tangent Angle Offset: Offset the horizontal orientation of the angle. May produce unrealistic results if misused.
+
+Buttons
+Delete Node: Delete this node from the system. If you want to undo, do it TWICE to restore references properly.
+
+Gizmos
+Tangent Handles: The Tangent values can be changed using useful handles. It is recommended to use this while looking down.
+Only show up if Show Gizmos on Airplane Path is true.
+
+4 - PATH REALISTIC SPEED INSPECTOR
+Component to add on the AirplanePath GameObject to get a simple and realistic speed simulation. Using this script, the aircraft will keep the same speed on a leveled path. The speed will change according 
+to slopes in the path. It will also change with the drag of the airplane, the drag being higher when going faster than the base speed of the path, and lower while going slower.
+
+Mass: Influences how much the plane accelerates and decelerates in slopes.
+Min Speed: The minimum speed of the aircraft. This prevents the plane to go unrealisticly slow in physically impossible settings.
+
+
+5 - SCRIPT REFERENCE (Useful methods and fields not shown in inspector)
+
+Class AirplanePath
+
+const float rollSmoothing: Smoothing applied on the roll. See script for further details.
+const int gizmoSplinePrecision: Number of line sections used to draw previews of your path in editor. A larger number will draw more precise previews but will be heavier to render.
+public bool Playing: True if the plane is flying on path.
+public float time: Normalized time [0,1] of the current spline section.
+public int Index: Index of the first node of the current spline section.
+public float RollOffset: Offset of roll angle. Modify by script to implement barrel rolls, for example.
+public float TurnRollAngle: Current roll angle due to turns. Read only.
+public event System.EventHandler<PathOverEventArgs> PathOver: Event raised when the path stops. Check FreeFall sample script for an example on how to use this.
+public void StartPath() or StartPath(int firstNodeIndex): Start the flight of the plane. Set firstNodeIndex to start at desired node index.
+public void StopPath() or StopPath(bool deactivatePlane): Stops the flight. Deactivate the plane GameObject if deactivatePlane is set. 
+Use default deactivatePlaneOnStop value if no value is provided.
+
+
+Class AirplaneNode
+
+public float Position: Property that returns the position of the node. Read only.
+
+
+Class PathOverEventArgs : EventArgs
+Class inheriting System.EventArgs, returned with PathOver event.
+
+public float OffsetRollAngle: Total roll angle of the plane when PathOver event is raised.
+Public Vector3 Velocity: Velocity of the plane when PathOver event is raised.
+Public bool Deactivated: True if the plane was deactivated when the path stopped.
+
+
+
+For more details, see comments in scripts.
+
+
+
+6 - CONTACT
+
+For more information or to signal an issue with this system, contact: 
+Maxime Charbonneau, maxime.charbonneau@parabole.ca
+www.parabole.ca
