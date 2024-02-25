@@ -11,8 +11,7 @@ public class paragliderScript : MonoBehaviour
     [Header("Game object only ther for debugging. Will set in runtime")]
     [SerializeField] private GameObject RightHand;
     [SerializeField] private GameObject LeftHand;
-    [SerializeField] private GameObject Core;
-    [SerializeField] private GameObject Head;
+    
     [SerializeField] private GameObject Player;
 
     private Rigidbody rb;
@@ -43,17 +42,25 @@ public class paragliderScript : MonoBehaviour
     InputDevice leftController;
 
     public float PlyerWeight;
+
+    public HandleInput leftHandle;
+    public HandleInput rightHandle;
+    public float minRotation = -45f;  // Minimum rotation angle to the left
+    public float maxRotation = 45f;   // Maximum rotation angle to the right
     void Awake()
     {
         // Get Components in Awake
         RightHand = GameObject.FindGameObjectWithTag("RHand");
         LeftHand = GameObject.FindGameObjectWithTag("LHand");
-        Core = GameObject.FindGameObjectWithTag("Core");
-        Head = GameObject.FindGameObjectWithTag("MainCamera");
+        
+        //Head = GameObject.FindGameObjectWithTag("MainCamera");
         Player = GameObject.FindGameObjectWithTag("Player");
         rb = Player.GetComponent<Rigidbody>();
         leftController = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         //rb.AddForce(50f*rb.mass, 0, 0); //Start force (stat speed)
+
+        leftHandle = leftHandle.GetComponent<HandleInput>();
+        rightHandle = rightHandle.GetComponent<HandleInput>();
 
         startTime = Time.time;
 
@@ -61,11 +68,21 @@ public class paragliderScript : MonoBehaviour
 
     void Update()
     {
+        float leftRotationZ = Mathf.Lerp(0, minRotation, (leftHandle.yvalue - 1) / 6f);
+        float rightRotationZ = Mathf.Lerp(0, maxRotation, (rightHandle.yvalue - 1) / 6f);
+
+        //Combine left and right rotations to tilt the glider
+        float combinedRotationZ = rightRotationZ - leftRotationZ;
+
+        // Apply the combined rotation to the glider along the z-axis
+        Player.transform.rotation = Quaternion.Euler(0f, 0f, combinedRotationZ);
+
+
         if (leftController.TryGetFeatureValue(CommonUsages.primaryButton, out bool primaryButtonPressed))
         {
             if (primaryButtonPressed)
             {
-                
+
                 ApplyLiftForce();
             }
             else if (isLifting)
@@ -79,7 +96,7 @@ public class paragliderScript : MonoBehaviour
     {
         float pullDirection;
         //Arm Distance
-        distance = GetHandDistance(out pullDirection);
+        //distance = GetHandDistance(out pullDirection);
         //distance = ClampWingspan(distance);
         //dragForce = GravityCalculation(distance, rb.velocity.y);
 
@@ -90,9 +107,9 @@ public class paragliderScript : MonoBehaviour
         // Check for trigger input
         CheckForInput();
 
-        flightDirection = Head.transform.rotation.eulerAngles.y;
+        
         // Apply forward thrust
-        ApplyForwardThrust(flightDirection);
+        ApplyForwardThrust();
 
         //RotateGlider(pullDirection);
 
@@ -116,6 +133,7 @@ public class paragliderScript : MonoBehaviour
         if (leftController.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue))
         {
             // Adjust forward thrust based on the trigger value
+            //Debug.Log(triggerValue);
             forwardThrust = triggerValue;
         }
         else
@@ -123,20 +141,20 @@ public class paragliderScript : MonoBehaviour
             // If trigger is not pressed, set forward thrust to zero
             forwardThrust = Mathf.Lerp(forwardThrust, 0f, Time.deltaTime * releaseLerpSpeed);
         }
- 
+
     }
 
-    void ApplyForwardThrust(float viewDirection)
+    void ApplyForwardThrust()
     {
-        float angleInRadians = viewDirection * Mathf.Deg2Rad;
+        //float angleInRadians = viewDirection * Mathf.Deg2Rad;
 
         // Calculate the normalized direction vector based on the angle
-        Vector3 forwardVector = new Vector3(Mathf.Sin(angleInRadians), 0f, Mathf.Cos(angleInRadians));
+        //Vector3 forwardVector = new Vector3(Mathf.Sin(angleInRadians), 0f, Mathf.Cos(angleInRadians));
 
         // Apply constant forward thrust
-        Vector3 forwardForce = forwardVector * forwardThrust * 500f;
+        Vector3 forwardForce = Player.transform.forward * forwardThrust * 500f;
         rb.AddForce(forwardForce, ForceMode.Force);
-        
+
     }
 
 
@@ -149,7 +167,7 @@ public class paragliderScript : MonoBehaviour
     }
 
     #region Hand Distance
-    public float GetHandDistance(out float pullDirection)
+    /* public float GetHandDistance(out float pullDirection)
     {
         float fullDist = 0f;
 
@@ -160,10 +178,11 @@ public class paragliderScript : MonoBehaviour
 
         float threshold = 0.1f;
 
-        if(Mathf.Abs(rightDistance - leftDistance) < threshold)
+        if (Mathf.Abs(rightDistance - leftDistance) < threshold)
         {
             pullDirection = 0f;
-        } else
+        }
+        else
         {
             pullDirection = (rightDistance > leftDistance) ? 1f : -1f;
         }
@@ -175,7 +194,7 @@ public class paragliderScript : MonoBehaviour
         #endregion
 
         return fullDist;
-    }
+    }*/
     #endregion
 
     void RotateGlider(float pullDirection)
@@ -211,3 +230,4 @@ public class paragliderScript : MonoBehaviour
     #endregion
     */
 }
+

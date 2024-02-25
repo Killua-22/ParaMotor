@@ -9,6 +9,7 @@ public class HandleInput : MonoBehaviour
 
     public float Handleoutput = 0f;
     public float ydistance;
+    public float yvalue;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class HandleInput : MonoBehaviour
 
         float new_yDistance = pivot.position.y - Handle.transform.position.y;
 
-        float yvalue = new_yDistance - ydistance;
+        yvalue = new_yDistance - ydistance;
 
         yvalue *= 22.72f; //initial distance should be 0 but it is 0.044 for some reason after 1 frame. So to tackle that issue, I multiplied it by 22.72 to get ~1 output. The final output ranges from 1 to ~7.
 

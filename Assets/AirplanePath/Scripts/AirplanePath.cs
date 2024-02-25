@@ -479,7 +479,7 @@ public class AirplanePath : MonoBehaviour
 	{
 		if (nodeParent == null) 
 		{
-			Transform trans = transform.FindChild("Path");
+			Transform trans = transform.Find("Path");
 			if (trans != null)
 			{
 				nodeParent = trans.gameObject;
