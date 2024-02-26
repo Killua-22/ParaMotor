@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/TakeOff Scene.unity
+    guid: a52fa3464a7427c48b5c10b5240d6ba1
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: ab8cc841b50d43043a1c7fb3abe8f7c4, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c09820c65fa8aa847a4253a55eedc224, type: 2}
